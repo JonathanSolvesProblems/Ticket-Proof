@@ -1,8 +1,10 @@
-// Abstraction layer for XION / Abstraxion SDK
 import {
   useAbstraxionAccount,
   useAbstraxionSigningClient,
 } from "@burnt-labs/abstraxion-react-native";
+
+// Check if we're in debug mode
+const DEBUG = process.env.EXPO_PUBLIC_DEBUG === "true";
 
 /**
  * Hook-based service wrapper for Abstraxion.
@@ -24,8 +26,18 @@ export function useXIONService() {
     walletAddress: string;
     success: boolean;
   }> {
+    if (DEBUG) {
+      console.warn("DEBUG mode enabled: Simulating login...");
+      return {
+        walletAddress: "xion1debugwalletaddressxxxxxxxxxxxx",
+        success: true,
+      };
+    }
+
     try {
-      await login(); // Triggers Abstraxion login flow
+      const result = await login(); // Triggers Abstraxion login flow
+      console.log("login() result:", result);
+
       if (!account?.bech32Address) throw new Error("No wallet returned");
       return { walletAddress: account.bech32Address, success: true };
     } catch (e) {
@@ -41,7 +53,7 @@ export function useXIONService() {
       const res = await client.execute(
         account.bech32Address,
         process.env.EXPO_PUBLIC_USER_MAP_CONTRACT_ADDRESS!,
-        { store_ticket: ticketData }, // <-- adapt to your contract schema
+        { store_ticket: ticketData },
         "auto"
       );
       console.log("Ticket stored:", res.transactionHash);
@@ -78,7 +90,6 @@ export function useXIONService() {
       throw new Error("No signer available");
     }
 
-    // Auto stringify objects before signing
     const message = typeof data === "string" ? data : JSON.stringify(data);
 
     const response = await signArb(client.granteeAddress, message);

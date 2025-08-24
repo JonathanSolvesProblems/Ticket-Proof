@@ -12,11 +12,17 @@ import { useAppStore } from '@/store/useAppStore';
 import { TicketCard } from '@/components/TicketCard';
 import { locationService } from '@/services/locationService';
 import { useXIONService } from '@/services/xionService';
+import sodium from 'libsodium-wrappers';
 
 export default function TicketsScreen() {
   const { tickets, checkInToEvent, isLoading, initializeStore } = useAppStore();
   const [refreshing, setRefreshing] = React.useState(false);
   const { generateZkTLSProof } = useXIONService();
+
+  (async () => {
+    await sodium.ready;
+    console.log('✅ Libsodium ready');
+  })();
 
   useEffect(() => {
     initializeStore();
