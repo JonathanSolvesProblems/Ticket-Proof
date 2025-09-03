@@ -87,9 +87,9 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace 'com.jonathansolvesproblems.boltexponativewind'
+    namespace 'com.jonathansolvesproblems.ticketproof'
     defaultConfig {
-        applicationId 'com.jonathansolvesproblems.boltexponativewind'
+        applicationId 'com.jonathansolvesproblems.ticketproof'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

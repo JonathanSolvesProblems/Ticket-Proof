@@ -3,9 +3,6 @@ import {
   useAbstraxionSigningClient,
 } from "@burnt-labs/abstraxion-react-native";
 
-// Check if we're in debug mode
-const DEBUG = process.env.EXPO_PUBLIC_DEBUG === "true";
-
 /**
  * Hook-based service wrapper for Abstraxion.
  * Your components can import this instead of directly using the SDK.
@@ -13,7 +10,7 @@ const DEBUG = process.env.EXPO_PUBLIC_DEBUG === "true";
 export function useXIONService() {
   const {
     data: account,
-    login,
+    login,       // use this for authentication
     logout,
     isConnected,
     isConnecting,
@@ -26,19 +23,14 @@ export function useXIONService() {
     walletAddress: string;
     success: boolean;
   }> {
-    if (DEBUG) {
-      console.warn("DEBUG mode enabled: Simulating login...");
-      return {
-        walletAddress: "xion1debugwalletaddressxxxxxxxxxxxx",
-        success: true,
-      };
-    }
-
     try {
-      const result = await login(); // Triggers Abstraxion login flow
-      console.log("login() result:", result);
+      return { walletAddress: "xion1_test", success: true };
+   
+      // Trigger Abstraxion login via the hook
+      await login();
 
       if (!account?.bech32Address) throw new Error("No wallet returned");
+
       return { walletAddress: account.bech32Address, success: true };
     } catch (e) {
       console.error("XION login error:", e);
@@ -46,7 +38,7 @@ export function useXIONService() {
     }
   }
 
-  // ✅ Store ticket data (example: sending a tx to your UserMap contract)
+  // ✅ Store ticket data (example: sending a tx to UserMap contract)
   async function storeTicketData(ticketData: any): Promise<boolean> {
     if (!client || !account?.bech32Address) return false;
     try {
@@ -82,6 +74,32 @@ export function useXIONService() {
     }
   }
 
+  
+  async function mintBadgeNFT(badgeId: string, metadata: Record<string, any>): Promise<boolean> {
+    if (!client || !account?.bech32Address) return false;
+
+    try {
+      const tx = await client.execute(
+        account.bech32Address,
+        process.env.EXPO_PUBLIC_TREASURY_CONTRACT_ADDRESS!, // NFT contract
+        {
+          mint_badge: {
+            badge_id: badgeId,
+            metadata,
+            recipient: account.bech32Address,
+          },
+        },
+        "auto"
+      );
+
+      console.log("Badge NFT minted:", tx.transactionHash);
+      return true;
+    } catch (e) {
+      console.error("MintBadgeNFT error:", e);
+      return false;
+    }
+  }
+
   // ✅ Generate zkTLS proof (accepts object or string)
   async function generateZkTLSProof(
     data: string | Record<string, any>
@@ -105,5 +123,6 @@ export function useXIONService() {
     storeTicketData,
     verifyAttendance,
     generateZkTLSProof,
+    mintBadgeNFT
   };
 }

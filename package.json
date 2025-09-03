@@ -8,7 +8,8 @@
     "build:web": "expo export --platform web",
     "lint": "expo lint",
     "android": "expo run:android",
-    "ios": "expo run:ios"
+    "ios": "expo run:ios",
+    "postinstall": "rn-nodeify --install crypto,stream,buffer,assert,events,process --hack"
   },
   "dependencies": {
     "@burnt-labs/abstraxion-react-native": "^1.0.0-alpha.6",
@@ -20,6 +21,9 @@
     "@react-native-async-storage/async-storage": "2.1.2",
     "@react-navigation/bottom-tabs": "^7.2.0",
     "@react-navigation/native": "^7.0.14",
+    "assert": "^1.1.1",
+    "buffer": "^6.0.3",
+    "events": "^1.0.0",
     "expo": "^53.0.20",
     "expo-blur": "~14.1.5",
     "expo-camera": "~16.1.11",
@@ -36,13 +40,19 @@
     "expo-symbols": "^0.4.5",
     "expo-system-ui": "~5.0.10",
     "expo-web-browser": "~14.2.0",
+    "libsodium": "^0.7.15",
     "lucide-react-native": "^0.475.0",
+    "process": "^0.11.0",
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "react-native": "^0.79.5",
+    "react-native-crypto": "^2.2.1",
     "react-native-gesture-handler": "~2.24.0",
+    "react-native-get-random-values": "^1.11.0",
+    "react-native-libsodium": "^1.4.0",
     "react-native-qrcode-scanner": "^1.5.5",
     "react-native-quick-crypto": "^0.7.17",
+    "react-native-randombytes": "^3.6.2",
     "react-native-reanimated": "~3.17.4",
     "react-native-safe-area-context": "5.4.0",
     "react-native-screens": "~4.11.1",
@@ -50,11 +60,33 @@
     "react-native-url-polyfill": "^2.0.0",
     "react-native-web": "^0.20.0",
     "react-native-webview": "13.13.5",
+    "readable-stream": "^1.0.33",
+    "stream-browserify": "^1.0.0",
     "zustand": "^5.0.7"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
+    "@react-native-community/cli": "^20.0.1",
     "@types/react": "~19.0.10",
+    "rn-nodeify": "^10.3.0",
     "typescript": "~5.8.3"
+  },
+  "react-native": {
+    "crypto": "react-native-crypto",
+    "_stream_transform": "readable-stream/transform",
+    "_stream_readable": "readable-stream/readable",
+    "_stream_writable": "readable-stream/writable",
+    "_stream_duplex": "readable-stream/duplex",
+    "_stream_passthrough": "readable-stream/passthrough",
+    "stream": "stream-browserify"
+  },
+  "browser": {
+    "crypto": "react-native-crypto",
+    "_stream_transform": "readable-stream/transform",
+    "_stream_readable": "readable-stream/readable",
+    "_stream_writable": "readable-stream/writable",
+    "_stream_duplex": "readable-stream/duplex",
+    "_stream_passthrough": "readable-stream/passthrough",
+    "stream": "stream-browserify"
   }
 }

@@ -1,4 +1,4 @@
-package com.jonathansolvesproblems.boltexponativewind
+package com.jonathansolvesproblems.ticketproof
 
 import android.app.Application
 import android.content.res.Configuration

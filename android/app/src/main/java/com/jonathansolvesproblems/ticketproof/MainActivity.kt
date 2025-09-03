@@ -1,4 +1,4 @@
-package com.jonathansolvesproblems.boltexponativewind
+package com.jonathansolvesproblems.ticketproof
 import expo.modules.splashscreen.SplashScreenManager
 
 import android.os.Build

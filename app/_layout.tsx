@@ -1,3 +1,4 @@
+import '../services/polyfills';
 import { useEffect } from 'react';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
@@ -11,12 +12,6 @@ import {
 import { useAppStore } from '@/store/useAppStore';
 import { AuthScreen } from '@/components/AuthScreen';
 import { AbstraxionProvider } from '@burnt-labs/abstraxion-react-native';
-import { Buffer } from 'buffer';
-import crypto from 'react-native-quick-crypto';
-
-// Make crypto and Buffer globally available
-(global as any).crypto = crypto as unknown as Crypto;
-global.Buffer = Buffer;
 
 // Treasury config for XION blockchain
 const treasuryConfig = {
@@ -24,7 +19,7 @@ const treasuryConfig = {
   gasPrice: '0.001uxion',
   rpcUrl: process.env.EXPO_PUBLIC_RPC_ENDPOINT!,
   restUrl: process.env.EXPO_PUBLIC_REST_ENDPOINT!,
-  callbackUrl: 'abstraxion-expo-demo://', // or make this an env too if needed
+  callbackUrl: process.env.EXPO_PUBLIC_CALLBACK_URL!,
 };
 
 export default function RootLayout() {
