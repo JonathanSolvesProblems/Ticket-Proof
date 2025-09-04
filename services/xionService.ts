@@ -24,7 +24,6 @@ export function useXIONService() {
     success: boolean;
   }> {
     try {
-      return { walletAddress: "xion1_test", success: true };
    
       // Trigger Abstraxion login via the hook
       await login();
