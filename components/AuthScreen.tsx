@@ -19,7 +19,7 @@ export function AuthScreen() {
   const { setUser, setLoading } = useAppStore();
   const [email, setEmail] = useState('');
   const [loading, setAuthLoading] = useState(false);
-  const { authenticateWithMeta } = useXIONService();
+  const { authenticateWithMeta, isConnected, isConnecting } = useXIONService();
 
   const handleLogin = async () => {
     if (!email.trim()) {
@@ -27,14 +27,25 @@ export function AuthScreen() {
       return;
     }
 
+    if (isConnecting) {
+      Alert.alert('Info', 'Connection in progress, please wait...');
+      return;
+    }
+
     setAuthLoading(true);
     setLoading(true);
 
     try {
+      console.log('Starting XION authentication...');
+
+      // Add a small delay to ensure provider is ready
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
       // Authenticate with Meta Account via Abstraxion
       const result = await authenticateWithMeta();
+      console.log('Authentication result:', result);
 
-      if (result.success) {
+      if (result.success && result.walletAddress) {
         const user = {
           id: Date.now().toString(),
           email: email.trim(),
@@ -45,14 +56,18 @@ export function AuthScreen() {
         setUser(user);
         Alert.alert('Success', 'Logged in successfully with XION wallet!');
       } else {
-        Alert.alert('Error', 'Authentication failed. Please try again.');
+        console.warn('Authentication failed:', result);
+        Alert.alert(
+          'Error',
+          'Authentication failed. Please make sure you have a XION wallet set up and try again.'
+        );
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Authentication error:', error);
-      Alert.alert(
-        'Error',
-        'Failed to authenticate. Please check your connection.'
-      );
+      const errorMessage =
+        error?.message ||
+        'Failed to authenticate. Please check your connection.';
+      Alert.alert('Error', errorMessage);
     } finally {
       setAuthLoading(false);
       setLoading(false);

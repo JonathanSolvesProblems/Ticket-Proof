@@ -24,15 +24,31 @@ export function useXIONService() {
     success: boolean;
   }> {
     try {
-   
+      console.log("Starting XION authentication...");
+      console.log("Current connection status:", { isConnected, isConnecting });
+      
       // Trigger Abstraxion login via the hook
       await login();
+      
+      // Wait a bit for the account to be available
+      let retries = 0;
+      const maxRetries = 10;
+      while (!account?.bech32Address && retries < maxRetries) {
+        console.log(`Waiting for wallet... retry ${retries + 1}/${maxRetries}`);
+        await new Promise(resolve => setTimeout(resolve, 500));
+        retries++;
+      }
 
-      if (!account?.bech32Address) throw new Error("No wallet returned");
+      if (!account?.bech32Address) {
+        console.warn("No wallet returned after login. Account state:", account);
+        throw new Error("No wallet returned after authentication");
+      }
 
+      console.log("Authentication successful! Wallet:", account.bech32Address);
       return { walletAddress: account.bech32Address, success: true };
-    } catch (e) {
+    } catch (e: any) {
       console.error("XION login error:", e);
+      console.error("Error details:", e?.message || e);
       return { walletAddress: "", success: false };
     }
   }
@@ -103,14 +119,26 @@ export function useXIONService() {
   async function generateZkTLSProof(
     data: string | Record<string, any>
   ): Promise<string> {
-    if (!signArb || !client?.granteeAddress) {
-      throw new Error("No signer available");
+    try {
+      if (!signArb) {
+        console.warn("SignArb not available, waiting for client initialization...");
+        throw new Error("Signing client not yet initialized");
+      }
+      
+      if (!client?.granteeAddress) {
+        console.warn("Missing grantee address. Client state:", client);
+        throw new Error("No grantee address available");
+      }
+
+      const message = typeof data === "string" ? data : JSON.stringify(data);
+      console.log("Generating zkTLS proof for message...");
+      
+      const response = await signArb(client.granteeAddress, message);
+      return response || "";
+    } catch (error) {
+      console.error("Failed to generate zkTLS proof:", error);
+      throw error;
     }
-
-    const message = typeof data === "string" ? data : JSON.stringify(data);
-
-    const response = await signArb(client.granteeAddress, message);
-    return response || "";
   }
 
   return {
